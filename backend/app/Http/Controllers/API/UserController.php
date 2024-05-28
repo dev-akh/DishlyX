@@ -4,11 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Http\Request;
+use App\Http\Requests\UserRegister;
 
 class UserController extends Controller
 {
@@ -17,15 +15,8 @@ class UserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): Response
+    public function store(UserRegister $request)
     {
-        $request->validate([
-            'name'      => ['required', 'string', 'max:255'],
-            'email'     => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'phone'     => ['required', 'string', 'max:12', 'unique:'.User::class],
-            'password'  => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
-
         $user = User::create([
             'name'      => $request->name,
             'email'     => $request->email,
@@ -34,8 +25,6 @@ class UserController extends Controller
             'password'  => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
-
-        return response()->noContent();
+        return response()->json(['success'=>true,'user'=>$user],201);
     }
 }
