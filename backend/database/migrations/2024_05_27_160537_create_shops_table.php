@@ -13,17 +13,19 @@ return new class extends Migration
     {
         Schema::create('shops', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
-            $table->string('log');
-            $table->string('phone')->nullable();
+            $table->string('name');
+            $table->string('logo')->nullable();
+            $table->string('url');
+            $table->string('phone');
             $table->string('mobile')->nullable();
-            $table->string('email');
+            $table->string('email')->nullable();
             $table->string('manager');
             $table->string('state');
+            $table->string('city');
             $table->string('township')->nullable();
             $table->longText('address');
             $table->longText('geolocation')->nullable();
-            $table->boolean('active')->default(0);
+            $table->boolean('active')->default(0)->comment('0:inactive,1:active');
             $table->timestamps();
             $table->softDeletes(); 
         });
