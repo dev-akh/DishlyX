@@ -10,6 +10,12 @@ use App\Http\Requests\UserRegister;
 
 class UserController extends Controller
 {
+
+    public function index()
+    {
+        $users=User::all();
+        return response()->json(['success'=>true,'users'=>$users],200);
+    }
     /**
      * Handle an incoming registration request.
      *
