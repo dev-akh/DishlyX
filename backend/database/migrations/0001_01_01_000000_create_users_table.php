@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('phone');
-            $table->integer('type')->default(2)->comment('0:superadmin,1:owner,2:waiter,3:other');
+            $table->integer('type')->default(2)->comment('0:superadmin,1:owner,2:manager,3:casher,4:waiter,5:guest');
             $table->rememberToken();
             $table->timestamps();
         });
