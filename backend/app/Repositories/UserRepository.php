@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\User;
 use App\Interface\UserInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 
 class UserRepository implements UserInterface {
 

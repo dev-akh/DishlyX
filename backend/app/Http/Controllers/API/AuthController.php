@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RefreshTokenRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Auth\Events\Registered;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -20,6 +21,9 @@ class AuthController extends Controller
     {
         $userData = $request->validated();
         $user = User::create($userData);
+        event(new Registered($user));
+        $user->sendEmailVerificationNotification();
+
         $response = Http::post(route('passport.token'), [
             'grant_type' => 'password',
             'client_id' => config('passport.passport_password_client.id'),
