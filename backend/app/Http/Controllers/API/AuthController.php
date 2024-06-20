@@ -19,27 +19,39 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): JsonResponse
     {
-        $userData = $request->validated();
-        $user = User::create($userData);
-        event(new Registered($user));
-        $user->sendEmailVerificationNotification();
+        try {
+            $userData = $request->validated();
+            $user = User::create($userData);
+            event(new Registered($user));
+            $user->sendEmailVerificationNotification();
 
-        $response = Http::post(route('passport.token'), [
-            'grant_type' => 'password',
-            'client_id' => config('passport.passport_password_client.id'),
-            'client_secret' => config('passport.passport_password_client.secret'),
-            'username' => $userData['email'],
-            'password' => $userData['password'],
-            'scope' => '',
-        ]);
-        $token = $response->json();
-
-        return response()->json([
-            'success' => true,
-            'statusCode' => 201,
-            'message' => 'User has been registered successfully.',
-            'data' => ['user'=>$user, 'token' => $token ]
-        ], 201);
+            $response = Http::post(route('passport.token'), [
+                'grant_type' => 'password',
+                'client_id' => config('passport.passport_password_client.id'),
+                'client_secret' => config('passport.passport_password_client.secret'),
+                'username' => $userData['email'],
+                'password' => $userData['password'],
+                'scope' => '',
+            ]);
+            $token = $response->json();
+            if($response->getStatusCode() == 200) {
+                return response()->json([
+                    'success' => true,
+                    'statusCode' => 201,
+                    'message' => 'User has been registered successfully.',
+                    'data' => ['user'=>$user, 'token' => $token ]
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'statusCode' => $response->getStatusCode(),
+                    'message' => 'Token request failed.',
+                    'data' => []
+                ], $response->getStatusCode());
+            }
+        } catch (\Throwable $th) {
+            return throw $th;
+        }
     }
 
     /**
